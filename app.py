@@ -131,4 +131,4 @@ def create_project():
     return render_template('create_project.html')
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
