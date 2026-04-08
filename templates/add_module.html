@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Forge — Add Module</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0a0a0f; --surface: #16161f; --surface2: #1c1c28;
+      --accent: #7c6ef5; --border: #222232; --border2: #2e2e42;
+      --text: #e2e2ed; --text-dim: #9090aa; --text-mute: #52526a;
+      --done: #3ecf8e; --done-lo: rgba(62,207,142,0.1);
+      --radius: 12px;
+    }
+    body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+    
+    /* Background Grid */
+    body::after {
+      content: ''; position: fixed; inset: 0; pointer-events: none;
+      background-image: linear-gradient(rgba(124,110,245,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(124,110,245,0.02) 1px, transparent 1px);
+      background-size: 50px 50px; z-index: 0;
+    }
+
+    nav { height: 64px; display: flex; align-items: center; padding: 0 2rem; border-bottom: 1px solid var(--border); background: rgba(10,10,15,0.8); backdrop-filter: blur(10px); position: relative; z-index: 10; }
+    .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); font-family: 'Syne', sans-serif; font-weight: 800; }
+    .brand-icon { width: 24px; height: 24px; background: var(--accent); clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); }
+
+    main { position: relative; z-index: 1; max-width: 600px; margin: 0 auto; padding: 3rem 1.5rem; }
+
+    .project-chip { display: inline-flex; align-items: center; gap: 8px; background: var(--surface); border: 1px solid var(--border2); border-radius: 100px; padding: 6px 14px; margin-bottom: 1.5rem; }
+    .chip-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+
+    /* Roadmap Section */
+    .roadmap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 2rem; }
+    .label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-mute); margin-bottom: 1rem; font-weight: 700; }
+
+    .module-row { display: flex; align-items: center; gap: 12px; padding: 10px; background: var(--surface2); border-radius: 8px; margin-bottom: 8px; border: 1px solid transparent; }
+    .module-num { font-family: 'Syne', sans-serif; font-size: 0.75rem; font-weight: 700; color: var(--accent); width: 25px; }
+    .module-title { flex: 1; font-size: 0.9rem; color: var(--text-dim); }
+    .status-badge { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; background: var(--done-lo); color: var(--done); border: 1px solid rgba(62,207,142,0.2); }
+
+    .no-records { padding: 2rem; text-align: center; color: var(--text-mute); font-style: italic; border: 1px dashed var(--border2); border-radius: 8px; font-size: 0.9rem; }
+    
+    .module-placeholder { display: flex; align-items: center; gap: 12px; padding: 12px; border-top: 1px dashed var(--border2); margin-top: 10px; color: var(--text-mute); font-size: 0.85rem; font-style: italic; }
+
+    /* Form */
+    .form-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+    input[type="text"] { width: 100%; background: var(--surface-hi); border: 1px solid var(--border2); padding: 14px; border-radius: 10px; color: var(--text); font-size: 1rem; margin-top: 8px; outline: none; }
+    input[type="text"]:focus { border-color: var(--accent); }
+
+    .btn-submit { width: 100%; background: var(--accent); color: white; border: none; padding: 14px; border-radius: 10px; font-weight: 700; margin-top: 1.5rem; cursor: pointer; transition: opacity 0.2s; }
+    .btn-submit:hover { opacity: 0.9; }
+    textarea {
+  width: 100%;
+  background: var(--surface-hi);
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1rem;
+  padding: 14px 16px;
+  outline: none;
+  margin-top: 8px;
+  resize: vertical; /* Allows user to scale height, but not width */
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-lo);
+}
+
+/* Scrollbar styling to match the dark theme */
+textarea::-webkit-scrollbar {
+  width: 8px;
+}
+textarea::-webkit-scrollbar-track {
+  background: var(--surface);
+}
+textarea::-webkit-scrollbar-thumb {
+  background: var(--border2);
+  border-radius: 4px;
+}
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="brand"><div class="brand-icon"></div>Forge</a>
+</nav>
+
+<main>
+  <div class="project-chip">
+    <div class="chip-dot"></div>
+    <span class="chip-name">{{ project_name }}</span>
+  </div>
+
+  <h1 style="font-family: 'Syne'; font-size: 2rem; margin-bottom: 2rem;">New Module</h1>
+
+  <section class="roadmap">
+    <div class="label">Current Sequence</div>
+
+    {% if modules %}
+      {% for module in modules %}
+      <div class="module-row">
+        <div class="module-num">{{ "%02d" % loop.index }}</div>
+        <div class="module-title">{{ module.name }}</div>
+        {% if module.is_done %}
+          <div class="status-badge">Done</div>
+        {% else %}
+          <div class="status-badge" style="color: var(--text-mute); background: transparent; border-color: var(--border2);">Pending</div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="no-records">
+        No modules found in the sequence. Start by adding your first task below.
+      </div>
+    {% endif %}
+
+    <div class="module-placeholder">
+      <div class="module-num">{{ "%02d" % (modules|length + 1) }}</div>
+      <span>New module will be appended here...</span>
+    </div>
+  </section>
+
+  <form action="/add-module/{{ project_id }}" method="POST">
+    <div class="form-card">
+      <label style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-mute); font-weight: 700;">Project Name</label>
+      <input type="text" name="project-name" placeholder="Enter project name..." required autofocus>
+      <label style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-mute); font-weight: 700;">Module Name</label>
+      <input type="text" name="mod-name" placeholder="Enter task name..." required autofocus>
+      <label style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-mute); font-weight: 700;">Description</label>
+      <textarea name="mod-descp"placeholder="Describe what needs to be done in this module..." rows="4"></textarea>
+      <button type="submit" class="btn-submit">Add to Roadmap</button>
+    </div>
+  </form>
+</main>
+
+</body>
+</html>

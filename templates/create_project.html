@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Forge — New Project</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0a0a0f;
+      --surface:   #16161f;
+      --surface2:  #1c1c28;
+      --accent:    #7c6ef5;
+      --accent-lo: rgba(124,110,245,0.12);
+      --border:    #222232;
+      --border2:   #2e2e42;
+      --text:      #e2e2ed;
+      --text-dim:  #9090aa;
+      --text-mute: #52526a;
+      --done:      #3ecf8e;
+      --done-lo:   rgba(62,207,142,0.1);
+      --warn:      #f59e0b;
+      --radius:    12px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background-image:
+        linear-gradient(rgba(124,110,245,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(124,110,245,0.025) 1px, transparent 1px);
+      background-size: 48px 48px;
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      height: 58px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2.5rem;
+      background: rgba(10,10,15,0.88);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+    .brand-icon {
+      width: 30px; height: 30px;
+      background: var(--accent);
+      clip-path: polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%);
+    }
+    .brand-name {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1rem;
+      color: var(--text);
+      letter-spacing: 0.04em;
+    }
+    .brand-sub {
+      font-size: 0.68rem;
+      color: var(--text-mute);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 500;
+      padding: 7px 16px;
+      border-radius: 8px;
+      text-decoration: none;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: background 0.18s, color 0.18s, border-color 0.18s;
+    }
+    .btn-ghost { background: transparent; color: var(--text-dim); border-color: var(--border2); }
+    .btn-ghost:hover { color: var(--text); border-color: var(--accent); }
+
+    /* ─── MAIN ─── */
+    main {
+      position: relative;
+      z-index: 1;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 3rem 2.5rem;
+    }
+
+    /* ─── BREADCRUMB ─── */
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.78rem;
+      color: var(--text-mute);
+      margin-bottom: 2rem;
+    }
+    .breadcrumb a { color: var(--text-mute); text-decoration: none; transition: color 0.15s; }
+    .breadcrumb a:hover { color: var(--accent); }
+    .breadcrumb .sep { opacity: 0.4; }
+    .breadcrumb .current { color: var(--text-dim); }
+
+    /* ─── PAGE HEAD ─── */
+    .page-head { margin-bottom: 2rem; animation: fadeUp 0.35s ease both; }
+
+    .eyebrow {
+      font-size: 0.7rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+
+    .page-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1.1;
+    }
+
+    .page-sub {
+      margin-top: 6px;
+      font-size: 0.85rem;
+      color: var(--text-dim);
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── FORM CARD ─── */
+    .form-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
+      animation: fadeUp 0.35s 0.07s ease both;
+    }
+
+    .form-card::before {
+      content: '';
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+    }
+
+    /* ─── FORM ELEMENTS ─── */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      margin-bottom: 1.4rem;
+    }
+
+    .form-group:last-of-type { margin-bottom: 0; }
+
+    label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-mute);
+      font-weight: 500;
+    }
+
+    .field-hint {
+      font-size: 0.75rem;
+      color: var(--text-mute);
+      font-style: italic;
+      margin-top: -3px;
+    }
+
+    input[type="text"],
+    textarea,
+    select {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 9px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      padding: 11px 14px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    input[type="text"]:focus,
+    textarea:focus,
+    select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(124,110,245,0.12);
+    }
+
+    input::placeholder,
+    textarea::placeholder { color: var(--text-mute); font-style: italic; }
+
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+      line-height: 1.6;
+    }
+
+    /* custom select arrow */
+    .select-wrap {
+      position: relative;
+    }
+    .select-wrap::after {
+      content: '▾';
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-mute);
+      pointer-events: none;
+      font-size: 0.85rem;
+    }
+
+    select { cursor: pointer; padding-right: 36px; }
+    select option { background: var(--surface2); }
+
+    /* ─── STATUS CARDS (radio style) ─── */
+    .status-options {
+      display: flex;
+      gap: 8px;
+    }
+
+    .status-option input[type="radio"] { display: none; }
+
+    .status-option label {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      padding: 10px 16px;
+      border: 1px solid var(--border2);
+      border-radius: 9px;
+      cursor: pointer;
+      transition: border-color 0.18s, background 0.18s;
+      text-transform: none;
+      letter-spacing: 0;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-dim);
+      min-width: 100px;
+    }
+
+    .status-option label .s-name { font-size: 0.85rem; font-weight: 600; color: var(--text-dim); }
+    .status-option label .s-desc { font-size: 0.72rem; color: var(--text-mute); font-style: italic; }
+
+    .status-option input[type="radio"]:checked + label {
+      border-color: var(--accent);
+      background: var(--accent-lo);
+      color: var(--text);
+    }
+
+    .status-option input[type="radio"]:checked + label .s-name { color: #a099f7; }
+
+    .status-option.opt-hold input[type="radio"]:checked + label {
+      border-color: rgba(245,158,11,0.4);
+      background: rgba(245,158,11,0.08);
+    }
+    .status-option.opt-hold input[type="radio"]:checked + label .s-name { color: var(--warn); }
+
+    /* ─── DIVIDER ─── */
+    .form-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 1.6rem 0;
+    }
+
+    /* ─── ACTIONS ─── */
+    .form-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1.8rem;
+      animation: fadeUp 0.35s 0.14s ease both;
+    }
+
+    .action-right { display: flex; gap: 8px; }
+
+    .btn-submit {
+      background: var(--accent);
+      color: #fff;
+      border: 1px solid var(--accent);
+      border-radius: 9px;
+      padding: 10px 22px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.18s, transform 0.1s;
+    }
+    .btn-submit:hover { background: #8f82f7; transform: translateY(-1px); }
+
+    .btn-cancel {
+      background: transparent;
+      color: var(--text-dim);
+      border: 1px solid var(--border2);
+      border-radius: 9px;
+      padding: 10px 18px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.88rem;
+      cursor: pointer;
+      text-decoration: none;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .btn-cancel:hover { color: var(--text); border-color: var(--border2); }
+
+    /* ─── TIP BOX ─── */
+    .tip-box {
+      background: var(--accent-lo);
+      border: 1px solid rgba(124,110,245,0.2);
+      border-radius: 9px;
+      padding: 12px 14px;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      margin-top: 1.6rem;
+      animation: fadeUp 0.35s 0.18s ease both;
+    }
+
+    .tip-icon { color: var(--accent); flex-shrink: 0; margin-top: 1px; }
+
+    .tip-text {
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      line-height: 1.55;
+    }
+
+    .tip-text strong { color: var(--text); font-weight: 500; }
+
+    @media (max-width: 600px) {
+      nav  { padding: 0 1.2rem; }
+      main { padding: 2rem 1.2rem; }
+      .status-options { flex-direction: column; }
+      .form-actions { flex-direction: column-reverse; gap: 10px; align-items: stretch; }
+      .action-right { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="brand" href="forge_dashboard.html">
+    <div class="brand-icon"></div>
+    <div>
+      <div class="brand-name">Forge</div>
+      <div class="brand-sub">Meridian · Project Hub</div>
+    </div>
+  </a>
+  <div>
+    <a class="btn btn-ghost" href="forge_dashboard.html">← Back</a>
+  </div>
+</nav>
+
+<main>
+
+  <div class="breadcrumb">
+    <a href="forge_dashboard.html">Forge</a>
+    <span class="sep">›</span>
+    <span class="current">New Project</span>
+  </div>
+
+  <div class="page-head">
+    <div class="eyebrow">Create</div>
+    <h1 class="page-title">New Project</h1>
+    <p class="page-sub">Define what you're building. Add modules after.</p>
+  </div>
+
+  <form method="POST">
+
+    <div class="form-card">
+
+      <!-- Name -->
+      <div class="form-group">
+        <label for="proj-name">Project Name</label>
+        <input type="text" id="proj-name" name="name"
+          placeholder="e.g. Meridian — Auth Module"
+          maxlength="80" required/>
+      </div>
+
+      <!-- Description -->
+      <div class="form-group">
+        <label for="proj-desc">Description</label>
+        <span class="field-hint">What are you building and why?</span>
+        <textarea id="proj-desc" name="description"
+          placeholder="Short description of the project goal, stack, or output..."></textarea>
+      </div>
+
+      <div class="form-divider"></div>
+
+      <!-- Status -->
+      <div class="form-group">
+        <label>Initial Status</label>
+        <div class="status-options">
+
+          <div class="status-option">
+            <input type="radio" name="status" id="s-active" value="active" checked/>
+            <label for="s-active">
+              <span class="s-name">Active</span>
+              <span class="s-desc">Actively working on it</span>
+            </label>
+          </div>
+
+          <div class="status-option opt-hold">
+            <input type="radio" name="status" id="s-hold" value="on-hold"/>
+            <label for="s-hold">
+              <span class="s-name">On Hold</span>
+              <span class="s-desc">Parked for now</span>
+            </label>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <div class="form-actions">
+      <a class="btn-cancel" href="{{ url_for('dash') }}">Cancel</a>
+      <div class="action-right">
+        <button class="btn-submit" type="submit" onclick="alert('Project Created')">
+          Create Project →
+        </button>
+      </div>
+    </div>
+
+  </form>
+
+  <div class="tip-box">
+    <div class="tip-icon">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M12 16v-4M12 8h.01"/>
+      </svg>
+    </div>
+    <div class="tip-text">
+      <strong>Modules come next.</strong> After creating the project, you'll be taken to the detail page where you can add and sequence your modules. Each module must be completed in order.
+    </div>
+  </div>
+
+</main>
+</body>
+</html>

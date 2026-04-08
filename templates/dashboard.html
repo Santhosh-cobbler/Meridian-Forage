@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Forge — Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0a0a0f;
+      --surface:   #16161f;
+      --surface2:  #1c1c28;
+      --accent:    #7c6ef5;
+      --accent-lo: rgba(124,110,245,0.12);
+      --accent-dim:#4e4494;
+      --border:    #222232;
+      --border2:   #2e2e42;
+      --text:      #e2e2ed;
+      --text-dim:  #9090aa;
+      --text-mute: #52526a;
+      --done:      #3ecf8e;
+      --done-lo:   rgba(62,207,142,0.1);
+      --warn:      #f59e0b;
+      --warn-lo:   rgba(245,158,11,0.1);
+      --radius:    12px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background-image:
+        linear-gradient(rgba(124,110,245,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(124,110,245,0.025) 1px, transparent 1px);
+      background-size: 48px 48px;
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      height: 58px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2.5rem;
+      background: rgba(10,10,15,0.88);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+
+    .brand-icon {
+      width: 30px;
+      height: 30px;
+      background: var(--accent);
+      clip-path: polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%);
+      flex-shrink: 0;
+    }
+
+    .brand-text { line-height: 1; }
+
+    .brand-name {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1rem;
+      color: var(--text);
+      letter-spacing: 0.04em;
+    }
+
+    .brand-sub {
+      font-size: 0.68rem;
+      color: var(--text-mute);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-top: 1px;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 500;
+      padding: 7px 16px;
+      border-radius: 8px;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: background 0.18s, color 0.18s, border-color 0.18s, transform 0.1s;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+    }
+    .btn-primary:hover { background: #8f82f7; transform: translateY(-1px); }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-dim);
+      border: 1px solid var(--border2);
+    }
+    .btn-ghost:hover { color: var(--text); border-color: var(--accent); }
+
+    /* ─── MAIN ─── */
+    main {
+      position: relative;
+      z-index: 1;
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 3rem 2.5rem;
+    }
+
+    .page-head { margin-bottom: 2.8rem; }
+
+    .eyebrow {
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+
+    .page-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.01em;
+      line-height: 1;
+    }
+
+    .page-sub {
+      margin-top: 8px;
+      font-size: 0.88rem;
+      color: var(--text-dim);
+    }
+
+    /* ─── STAT STRIP ─── */
+    .stats {
+      display: flex;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 2.2rem;
+    }
+
+    .stat {
+      flex: 1;
+      background: var(--surface);
+      padding: 1.1rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .stat-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.9rem;
+      font-weight: 700;
+      line-height: 1;
+    }
+    .stat-num.c-accent { color: var(--accent); }
+    .stat-num.c-done   { color: var(--done); }
+    .stat-num.c-warn   { color: var(--warn); }
+
+    .stat-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-mute);
+    }
+
+    /* ─── SECTION LABEL ─── */
+    .section-label {
+      font-size: 0.7rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-mute);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ─── PROJECT GRID ─── */
+    .project-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    /* ─── PROJECT CARD ─── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.4rem;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.2s, box-shadow 0.2s, transform 0.18s;
+      animation: fadeUp 0.4s both;
+    }
+
+    .card:nth-child(1) { animation-delay: 0.04s; }
+    .card:nth-child(2) { animation-delay: 0.09s; }
+    .card:nth-child(3) { animation-delay: 0.14s; }
+    .card:nth-child(4) { animation-delay: 0.19s; }
+    .card:nth-child(5) { animation-delay: 0.24s; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: 2px;
+      background: var(--accent);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.28s ease;
+    }
+
+    .card:hover {
+      border-color: rgba(124,110,245,0.5);
+      box-shadow: 0 6px 28px rgba(124,110,245,0.1);
+      transform: translateY(-2px);
+    }
+    .card:hover::before { transform: scaleX(1); }
+
+    .card.completed::before { background: var(--done); }
+    .card.completed:hover { border-color: rgba(62,207,142,0.4); box-shadow: 0 6px 28px rgba(62,207,142,0.08); }
+
+    .card.on-hold::before { background: var(--warn); }
+    .card.on-hold:hover { border-color: rgba(245,158,11,0.4); box-shadow: 0 6px 28px rgba(245,158,11,0.08); }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .card-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.98rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.3;
+    }
+
+    .badge {
+      font-size: 0.64rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 3px 9px;
+      border-radius: 20px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .badge.active    { background: var(--accent-lo); color: #a099f7; border: 1px solid rgba(124,110,245,0.25); }
+    .badge.completed { background: var(--done-lo);   color: var(--done);  border: 1px solid rgba(62,207,142,0.25); }
+    .badge.on-hold   { background: var(--warn-lo);   color: var(--warn);  border: 1px solid rgba(245,158,11,0.25); }
+
+    .card-desc {
+      font-size: 0.81rem;
+      color: var(--text-dim);
+      line-height: 1.55;
+      display: -webkit-box;
+      --webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .card-footer {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      padding-top: 0.6rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .arrow-link {
+      font-size: 0.75rem;
+      color: var(--text-mute);
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      transition: color 0.15s, gap 0.15s;
+    }
+    .card:hover .arrow-link { color: var(--accent); gap: 6px; }
+
+    /* ─── EMPTY ─── */
+    .empty {
+      grid-column: 1/-1;
+      padding: 4rem 2rem;
+      text-align: center;
+      color: var(--text-mute);
+    }
+    .empty h3 { font-family: 'Syne', sans-serif; color: var(--text-dim); font-size: 1rem; margin-bottom: 6px; }
+    .empty p  { font-size: 0.82rem; }
+
+    @media (max-width: 600px) {
+      nav    { padding: 0 1.2rem; }
+      main   { padding: 2rem 1.2rem; }
+      .stats { flex-direction: column; gap: 1px; }
+      .project-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="brand" href="#">
+    <div class="brand-icon"></div>
+    <div class="brand-text">
+      <div class="brand-name">Forge</div>
+      <div class="brand-sub">Meridian · Project Hub</div>
+    </div>
+  </a>
+  <div class="nav-actions">
+    <a class="btn btn-ghost" href="#">← Meridian</a>
+    <a class="btn btn-primary" href="{{ url_for('create_project') }}">+ New Project</a>
+  </div>
+</nav>
+
+<main>
+
+  <div class="page-head">
+    <div class="eyebrow">Project Hub</div>
+    <h1 class="page-title">Forge</h1>
+    <p class="page-sub">Build big things. One module at a time.</p>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-num c-accent">{{ Total_Projects }}</div>
+      <div class="stat-label">Total Projects</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">{{ Active_projects }}</div>
+      <div class="stat-label">Active</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num c-warn">{{ Holded_projects }}</div>
+      <div class="stat-label">On Hold</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num c-done">{{ Completed_projects }}</div>
+      <div class="stat-label">Completed</div>
+    </div>
+  </div>
+
+  <!-- Active Projects -->
+  <div class="section-label">Active</div>
+  <div class="project-grid">
+    {% set ns = namespace(found=false) %}
+    {% for p in projects %}
+      {% if p.status == 'active' %}
+        {% set ns.found = true %}
+        <a class="card">
+          <div class="card-top">
+            <div class="card-name">{{ p.title }}</div>
+            <div class="badge active">Active</div>
+          </div>
+          <div class="card-desc">{{ p.description }}</div>
+          <div class="card-footer">
+            <span class="arrow-link">Open →</span>
+          </div>
+        </a>
+      {% endif %}
+    {% endfor %}
+    {% if not ns.found %}
+      <div class="empty">
+        <h3>No active projects</h3>
+        <p>Start a new project to see it here.</p>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- On Hold -->
+  <div class="section-label">On Hold</div>
+  <div class="project-grid">
+    {% set ns = namespace(found=false) %}
+    {% for p in projects %}
+      {% if p.status == 'on-hold' %}
+        {% set ns.found = true %}
+        <a class="card on-hold">
+          <div class="card-top">
+            <div class="card-name">{{ p.title }}</div>
+            <div class="badge on-hold">On Hold</div>
+          </div>
+          <div class="card-desc">{{ p.description }}</div>
+          <div class="card-footer">
+            <span class="arrow-link">Open →</span>
+          </div>
+        </a>
+      {% endif %}
+    {% endfor %}
+    {% if not ns.found %}
+      <div class="empty">
+        <h3>No projects on hold</h3>
+        <p>Projects you pause will appear here.</p>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Completed -->
+  <div class="section-label">Completed</div>
+  <div class="project-grid">
+    {% set ns = namespace(found=false) %}
+    {% for p in projects %}
+      {% if p.status == 'completed' %}
+        {% set ns.found = true %}
+        <a class="card completed">
+          <div class="card-top">
+            <div class="card-name">{{ p.title }}</div>
+            <div class="badge completed">Completed</div>
+          </div>
+          <div class="card-desc">{{ p.description }}</div>
+          <div class="card-footer">
+            <span class="arrow-link">Open →</span>
+          </div>
+        </a>
+      {% endif %}
+    {% endfor %}
+    {% if not ns.found %}
+      <div class="empty">
+        <h3>No completed projects yet</h3>
+        <p>Finished projects will show up here.</p>
+      </div>
+    {% endif %}
+  </div>
+
+</main>
+</body>
+</html>
